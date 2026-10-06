@@ -2,6 +2,10 @@
 
 An AI-powered web application that compares a resume with a job description and estimates how closely the candidate's skills and experience match the position.
 
+## Demo
+
+![AI Resume Job Matcher](Screenshot%202026-09-30%20164335.png)
+
 ## Project Overview
 
 This project uses natural language processing (NLP) and text analysis to compare resume content with a job description.
@@ -90,7 +94,7 @@ http://127.0.0.1:5000
 Through this project, I practiced:
 
 * Python programming
-*  Flask web development
+* Flask web development
 * Natural language processing
 * Text processing
 * TF-IDF
@@ -107,4 +111,3 @@ Through this project, I practiced:
 This project was created as part of my AI Software Engineering portfolio to demonstrate practical skills in Python, web development, natural language processing, and software engineering.
 
 **Built by Alesha Auton | 2026**
-
