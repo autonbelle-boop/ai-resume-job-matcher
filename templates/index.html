@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Resume Job Matcher | Alesha Auton</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        header {
+            background: linear-gradient(135deg, #111827, #1e3a8a);
+            color: white;
+            padding: 55px 20px;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+
+        header h1 {
+            margin: 0 0 12px;
+            font-size: 42px;
+        }
+
+        header p {
+            margin: 0 auto;
+            max-width: 650px;
+            color: #dbeafe;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 950px;
+            margin: 40px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 32px;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+            margin-bottom: 25px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #111827;
+            font-size: 25px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            background: #fafafa;
+        }
+
+        input[type="file"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        textarea {
+            min-height: 220px;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #fecaca;
+        }
+
+        .result {
+            text-align: center;
+        }
+
+        .score-label {
+            color: #6b7280;
+            font-size: 15px;
+            margin-top: 25px;
+        }
+
+        .score {
+            font-size: 72px;
+            font-weight: bold;
+            color: #2563eb;
+            margin: 5px 0;
+        }
+
+        .score-description {
+            color: #6b7280;
+            font-size: 16px;
+            margin-bottom: 25px;
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 14px;
+            background: #e5e7eb;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 20px 0 30px;
+        }
+
+        .score-fill {
+            height: 100%;
+            width: {{ match_percentage }}%;
+            background: linear-gradient(90deg, #2563eb, #60a5fa);
+            border-radius: 20px;
+        }
+
+        .keyword-section {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .keyword-section h3 {
+            margin-bottom: 14px;
+            color: #111827;
+        }
+
+        .keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+        }
+
+        .keyword {
+            padding: 9px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .matching {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .missing {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .info {
+            background: #eff6ff;
+            padding: 17px;
+            border-radius: 10px;
+            margin-top: 25px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #1e40af;
+            border: 1px solid #dbeafe;
+        }
+
+        .technology {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .tech {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 8px 13px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .about {
+            text-align: center;
+        }
+
+        .about p {
+            max-width: 700px;
+            margin: 10px auto;
+            color: #6b7280;
+            line-height: 1.7;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 40px 20px;
+            }
+
+            header h1 {
+                font-size: 32px;
+            }
+
+            header p {
+                font-size: 16px;
+            }
+
+            .container {
+                width: 94%;
+                margin: 25px auto;
+            }
+
+            .card {
+                padding: 22px;
+            }
+
+            .score {
+                font-size: 58px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="badge">
+        AI / NLP Portfolio Project
+    </div>
+
+    <h1>
+        AI Resume Job Matcher
+    </h1>
+
+    <p>
+        Analyze how closely your resume matches a job description
+        using natural language processing and text similarity.
+    </p>
+
+</header>
+
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>
+            Analyze Your Resume
+        </h2>
+
+        <p class="subtitle">
+            Upload your resume and paste a job description to see
+            how closely they match.
+        </p>
+
+
+        {% if error %}
+
+            <div class="error">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+
+        <form method="POST" enctype="multipart/form-data">
+
+            <label for="resume">
+                Upload Your Resume
+            </label>
+
+            <input
+                type="file"
+                id="resume"
+                name="resume"
+                accept=".pdf,.docx"
+                required
+            >
+
+
+            <label for="job_description">
+                Job Description
+            </label>
+
+            <textarea
+                id="job_description"
+                name="job_description"
+                placeholder="Paste the job description here..."
+                required
+            ></textarea>
+
+
+            <button type="submit">
+                Analyze Resume
+            </button>
+
+        </form>
+
+
+        <div class="info">
+            <strong>Supported formats:</strong>
+            PDF and DOCX
+        </div>
+
+    </div>
+
+
+    {% if match_percentage is not none %}
+
+    <div class="card result">
+
+        <h2>
+            Resume Match Result
+        </h2>
+
+        <div class="score-label">
+            Estimated Match
+        </div>
+
+        <div class="score">
+            {{ match_percentage }}%
+        </div>
+
+        <div class="score-bar">
+            <div class="score-fill"></div>
+        </div>
+
+        <p class="score-description">
+            Estimated similarity between your resume
+            and the job description.
+        </p>
+
+
+        {% if matching_keywords %}
+
+        <div class="keyword-section">
+
+            <h3>
+                ✓ Matching Skills
+            </h3>
+
+            <div class="keywords">
+
+                {% for keyword in matching_keywords %}
+
+                    <span class="keyword matching">
+                        {{ keyword }}
+                    </span>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        {% if missing_keywords %}
+
+        <div class="keyword-section">
+
+            <h3>
+                ⚠ Skills to Consider Adding
+            </h3>
+
+            <div class="keywords">
+
+                {% for keyword in missing_keywords %}
+
+                    <span class="keyword missing">
+                        {{ keyword }}
+                    </span>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        <div class="info">
+
+            <strong>How it works:</strong>
+
+            This tool combines skill matching with
+            TF-IDF text analysis and cosine similarity
+            to estimate how closely a resume matches
+            a job description.
+
+            <br><br>
+
+            The result is an automated estimate and
+            should not be treated as a hiring decision.
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <div class="card about">
+
+        <h2>
+            About This Project
+        </h2>
+
+        <p>
+            This portfolio project demonstrates how Python,
+            natural language processing, and machine learning
+            techniques can be used to build a practical
+            career-focused application.
+        </p>
+
+
+        <div class="technology">
+
+            <span class="tech">Python</span>
+            <span class="tech">Flask</span>
+            <span class="tech">TF-IDF</span>
+            <span class="tech">Cosine Similarity</span>
+            <span class="tech">PDF Processing</span>
+            <span class="tech">DOCX Processing</span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<footer>
+
+    AI Resume Job Matcher
+    <br>
+    Built by Alesha Auton | 2026
+
+</footer>
+
+</body>
+</html>
